@@ -115,16 +115,17 @@ def video_processing_worker():
         # Mark the task as done
         video_queue.task_done()
 
+
+
+def start_monitoring_all_streamers():
+    streamers = Streamer.query.all()
+    for streamer in streamers:
+        start_monitoring(streamer.name)  # Assuming start_monitoring is the function that begins monitoring a streamer
+
+
+
 # Start the video processing worker in a separate thread
 threading.Thread(target=video_processing_worker, daemon=True).start()
-
-def monitor_and_download(streamer_name):
-    # ... [existing code] ...
-    download_stream(streamer_name)
-    print("Download completed!")
-    
-    # Add the downloaded video to the processing queue
-    video_queue.put(f"/downloads/{streamer_name}_{timestamp}.ext")  # Modify the path as needed
 
 
 
@@ -135,4 +136,5 @@ def create_database():
 
 if __name__ == '__main__':
     create_database()
+    start_monitoring_all_streamers
     app.run(host='0.0.0.0', port=5000)
