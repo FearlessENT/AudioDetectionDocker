@@ -110,7 +110,7 @@ def video_processing_worker():
         video_path = video_queue.get()
         
         # Process the video
-        process_video(video_path, MODEL)
+        process_video(video_path, MODEL, output_directory = "/output")
         
         # Mark the task as done
         video_queue.task_done()
