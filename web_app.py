@@ -102,15 +102,13 @@ def view_streamers():
     return jsonify(streamers=streamers)
 
 
-@app.before_first_request
-def initialize_monitoring():
+def start_monitoring():
     with app.app_context():
-        # Get all streamers from the database
         streamers = Streamer.query.all()
         for streamer in streamers:
-            # Start monitoring for each streamer
             monitor_streamer(streamer.name)
 
+start_monitoring()
 
 
 def video_processing_worker():
