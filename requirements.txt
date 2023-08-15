@@ -2,7 +2,7 @@ Flask
 streamlink
 yt_dlp
 moviepy
-Flask
+Flask==2.2.5
 Flask-SQLAlchemy
 colored
 onnx
