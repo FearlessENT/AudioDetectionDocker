@@ -7,6 +7,8 @@ import threading
 import queue
 from mainnoconversion import process_video  # Import the process_video function
 
+MODEL = "/model/bdetectionmodel_05_01_23.onnx"
+
 video_queue = queue.Queue()
 
 app = Flask(__name__)
@@ -35,7 +37,28 @@ def is_streamer_live(streamer_name):
 
 def download_stream(streamer_name):
     # Use yt-dlp to download the live stream to the /downloads directory in the container
-    os.system(f'yt-dlp -o "/downloads/{streamer_name}_%(timestamp)s.%(ext)s" https://www.twitch.tv/{streamer_name}')
+    timestamp = time.strftime("%Y%m%d-%H%M%S")
+    video_path = f"/downloads/{streamer_name}_{timestamp}.ext"
+    os.system(f'yt-dlp -o "{video_path}" https://www.twitch.tv/{streamer_name}')
+    return video_path
+
+
+
+def get_most_recent_file(directory):
+    files = [os.path.join(directory, f) for f in os.listdir(directory)]
+    return max(files, key=os.path.getctime)
+
+
+@app.route('/test_processing', methods=['GET'])
+def test_processing():
+    # Get the most recent file in the /downloads directory
+    video_path = get_most_recent_file("/downloads")
+    
+    # Add the video to the processing queue
+    video_queue.put(video_path)
+    
+    return "Started processing the most recent video!", 200
+
 
 
 def monitor_and_download(streamer_name):
@@ -43,9 +66,11 @@ def monitor_and_download(streamer_name):
     while True:
         if is_streamer_live(streamer_name):
             print(f"{streamer_name} is live! Starting download...")
-            download_stream(streamer_name)
+            video_path = download_stream(streamer_name)
             print("Download completed!")
-            break
+            
+            # Add the downloaded video to the processing queue
+            video_queue.put(video_path)
         else:
             print(f"{streamer_name} is not live. Checking again in {check_interval} seconds...")
             time.sleep(check_interval)
@@ -85,7 +110,7 @@ def video_processing_worker():
         video_path = video_queue.get()
         
         # Process the video
-        process_video(video_path)
+        process_video(video_path, MODEL)
         
         # Mark the task as done
         video_queue.task_done()

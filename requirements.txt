@@ -4,3 +4,6 @@ yt_dlp
 moviepy
 Flask
 Flask-SQLAlchemy
+colored
+onnx
+onnxruntime
