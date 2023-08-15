@@ -4,6 +4,10 @@ import os
 import time
 import subprocess
 import threading
+import queue
+from mainnoconversion import process_video  # Import the process_video function
+
+video_queue = queue.Queue()
 
 app = Flask(__name__)
 
@@ -72,6 +76,30 @@ def view_streamers():
     streamers = [streamer.name for streamer in Streamer.query.all()]
     return jsonify(streamers=streamers)
 
+
+
+
+def video_processing_worker():
+    while True:
+        # Wait for a video to be available in the queue
+        video_path = video_queue.get()
+        
+        # Process the video
+        process_video(video_path)
+        
+        # Mark the task as done
+        video_queue.task_done()
+
+# Start the video processing worker in a separate thread
+threading.Thread(target=video_processing_worker, daemon=True).start()
+
+def monitor_and_download(streamer_name):
+    # ... [existing code] ...
+    download_stream(streamer_name)
+    print("Download completed!")
+    
+    # Add the downloaded video to the processing queue
+    video_queue.put(f"/downloads/{streamer_name}_{timestamp}.ext")  # Modify the path as needed
 
 
 
