@@ -2,3 +2,5 @@ Flask
 streamlink
 yt_dlp
 moviepy
+Flask
+Flask-SQLAlchemy

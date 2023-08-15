@@ -4,10 +4,23 @@
     <title>Monitor Twitch Streamer</title>
 </head>
 <body>
-    <form action="/monitor" method="post">
-        <label for="streamer_name">Streamer Name:</label>
+    <form action="/add_streamer" method="post">
+        <label for="streamer_name">Add Streamer:</label>
         <input type="text" id="streamer_name" name="streamer_name">
-        <input type="submit" value="Start Monitoring">
+        <input type="submit" value="Add">
     </form>
+
+    <form action="/remove_streamer" method="post">
+        <label for="streamer_name">Remove Streamer:</label>
+        <input type="text" id="streamer_name" name="streamer_name">
+        <input type="submit" value="Remove">
+    </form>
+
+    <h2>Currently Monitored Streamers:</h2>
+    <ul>
+        {% for streamer in streamers %}
+            <li>{{ streamer }}</li>
+        {% endfor %}
+    </ul>
 </body>
 </html>
