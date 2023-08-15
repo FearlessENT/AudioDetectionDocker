@@ -70,7 +70,8 @@ def monitor_and_download(streamer_name):
             print("Download completed!")
             
             # Add the downloaded video to the processing queue
-            video_queue.put(video_path)
+            video_queue.put(f"/downloads/{streamer_name}_{timestamp}.ext")
+
         else:
             print(f"{streamer_name} is not live. Checking again in {check_interval} seconds...")
             time.sleep(check_interval)
@@ -125,13 +126,6 @@ def video_processing_worker():
 # Start the video processing worker in a separate thread
 threading.Thread(target=video_processing_worker, daemon=True).start()
 
-def monitor_and_download(streamer_name):
-    # ... [existing code] ...
-    download_stream(streamer_name)
-    print("Download completed!")
-    
-    # Add the downloaded video to the processing queue
-    video_queue.put(f"/downloads/{streamer_name}_{timestamp}.ext")  # Modify the path as needed
 
 
 
