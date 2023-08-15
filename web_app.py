@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
@@ -24,8 +24,7 @@ def add_streamer():
         new_streamer = Streamer(name=streamer_name)
         db.session.add(new_streamer)
         db.session.commit()
-        return jsonify(status="success", message=f"Added {streamer_name}")
-    return jsonify(status="error", message=f"{streamer_name} already exists")
+    return redirect(url_for('index'))
 
 @app.route('/remove_streamer', methods=['POST'])
 def remove_streamer():
@@ -34,8 +33,7 @@ def remove_streamer():
     if streamer:
         db.session.delete(streamer)
         db.session.commit()
-        return jsonify(status="success", message=f"Removed {streamer_name}")
-    return jsonify(status="error", message=f"{streamer_name} not found")
+    return redirect(url_for('index'))
 
 @app.route('/view_streamers', methods=['GET'])
 def view_streamers():

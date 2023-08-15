@@ -10,17 +10,27 @@
         <input type="submit" value="Add">
     </form>
 
-    <form action="/remove_streamer" method="post">
-        <label for="streamer_name">Remove Streamer:</label>
-        <input type="text" id="streamer_name" name="streamer_name">
-        <input type="submit" value="Remove">
-    </form>
-
     <h2>Currently Monitored Streamers:</h2>
-    <ul>
-        {% for streamer in streamers %}
-            <li>{{ streamer }}</li>
-        {% endfor %}
-    </ul>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Streamer Name</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for streamer in streamers %}
+                <tr>
+                    <td>{{ streamer.name }}</td>
+                    <td>
+                        <form action="/remove_streamer" method="post">
+                            <input type="hidden" name="streamer_name" value="{{ streamer.name }}">
+                            <input type="submit" value="Delete">
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </body>
 </html>
