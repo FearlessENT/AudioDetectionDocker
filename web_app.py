@@ -5,6 +5,7 @@ import time
 import subprocess
 import threading
 import queue
+import requests
 from mainnoconversion import process_video  # Import the process_video function
 
 MODEL = "/model/bdetectionmodel_05_01_23.onnx"
@@ -28,12 +29,31 @@ def index():
     streamers = Streamer.query.all()
     return render_template('index.html', streamers=streamers)
 
+
+
+
+
+
+# curl -X POST 'https://id.twitch.tv/oauth2/token?client_id=bhi8sez9xw58zn0yqnjiji6uzlewhd&client_secret=3a101si6uje2ii62t0h73vuu5qye7q&grant_type=client_credentials'
+
+
+
+
+
 def is_streamer_live(streamer_name):
-    # Use yt-dlp to check if streamer is live
-    result = subprocess.run(['yt-dlp', f'https://www.twitch.tv/{streamer_name}', '--skip-download', '--get-title'], capture_output=True, text=True)
-    if "is offline" not in result.stdout:
+    # Use the Twitch API to check if the streamer is live
+    headers = {
+        'Client-ID': 'bhi8sez9xw58zn0yqnjiji6uzlewhd',
+        'Authorization': 'Bearer svpsvp9a4beqdgycuzhipafpsosatv'
+    }
+    response = requests.get(f'https://api.twitch.tv/helix/streams?user_login={streamer_name}', headers=headers)
+    data = response.json()
+    
+    # Check if the streamer is live
+    if data['data'] and data['data'][0]['type'] == 'live':
         return True
     return False
+
 
 def download_stream(streamer_name):
     # Use yt-dlp to download the live stream to the /downloads directory in the container
@@ -62,7 +82,7 @@ def test_processing():
 
 
 def monitor_and_download(streamer_name):
-    check_interval = 60  # Check every 60 seconds
+    check_interval = 300  # Check every 60 seconds
     while True:
         if is_streamer_live(streamer_name):
             print(f"{streamer_name} is live! Starting download...")
@@ -74,6 +94,9 @@ def monitor_and_download(streamer_name):
         else:
             print(f"{streamer_name} is not live. Checking again in {check_interval} seconds...")
             time.sleep(check_interval)
+
+
+
 
 @app.route('/add_streamer', methods=['POST'])
 def add_streamer():
@@ -118,9 +141,10 @@ def video_processing_worker():
 
 
 def start_monitoring_all_streamers():
-    streamers = Streamer.query.all()
-    for streamer in streamers:
-        start_monitoring(streamer.name)  # Assuming start_monitoring is the function that begins monitoring a streamer
+    with app.app_context():
+        streamers = Streamer.query.all()
+        for streamer in streamers:
+            threading.Thread(target=monitor_and_download, args=(streamer.name,)).start()
 
 
 
