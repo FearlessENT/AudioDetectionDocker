@@ -12,8 +12,10 @@ def download_video(url, temp_folder):
         'format': 'best',
         'nocheckcertificate': True,
         'outtmpl': f'{output_folder}/%(title)s-{timestamp}.%(ext)s',  # added timestamp suffix
-        'cookies': 'cookies.txt'
+        'cookies': 'cookies.txt',
+        'quiet': True  # This will suppress all console output
     }
+
 
     with YoutubeDL(ydl_opts) as ydl:
         ydl.download([url])

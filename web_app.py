@@ -58,15 +58,22 @@ def is_streamer_live(streamer_name):
 def download_stream(streamer_name):
     # Use yt-dlp to download the live stream to the /downloads directory in the container
     timestamp = time.strftime("%Y%m%d-%H%M%S")
-    video_path = f"/downloads/{streamer_name}_{timestamp}.ext"
-    os.system(f'yt-dlp -o "{video_path}" https://www.twitch.tv/{streamer_name}')
+    video_path = f"/downloads/{streamer_name}_{timestamp}.mp4"
+    
+    # Use subprocess to run the yt-dlp command and mute its output
+    print(f"downloading stream from {streamer_name}")
+    with open(os.devnull, 'w') as fnull:
+        subprocess.call(['yt-dlp', '-o', video_path, f'https://www.twitch.tv/{streamer_name}'], stdout=fnull, stderr=fnull)
+    print(f"downloaded stream from {streamer_name}")
+    
     return video_path
 
 
 
 def get_most_recent_file(directory):
-    files = [os.path.join(directory, f) for f in os.listdir(directory)]
+    files = [os.path.join(directory, f) for f in os.listdir(directory) if not f.endswith('.part')]
     return max(files, key=os.path.getctime)
+
 
 
 @app.route('/test_processing', methods=['GET'])
