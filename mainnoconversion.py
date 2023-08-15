@@ -78,7 +78,7 @@ def merge_overlapping_segments(segments):
 
 
 
-def process_video(video_file, model_file, output_directory=None, buffer_before=0, buffer_after=0):
+def process_video(video_file, model_file, output_directory=None, buffer_before=2, buffer_after=2):
     # Start timing the process
     elapse_start_time = time.time()
     print(video_file)
