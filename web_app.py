@@ -57,7 +57,7 @@ def is_streamer_live(streamer_name):
 
 def download_stream(streamer_name):
     # Use yt-dlp to download the live stream to the /downloads directory in the container
-    timestamp = time.strftime("%Y%m%d-%H%M%S")
+    timestamp = time.strftime("%Y%m%d%H%M%S")
     video_path = f"/downloads/{streamer_name}_{timestamp}.mp4"
     
     # Use subprocess to run the yt-dlp command and mute its output
@@ -66,6 +66,7 @@ def download_stream(streamer_name):
         subprocess.call(['yt-dlp', '-o', video_path, f'https://www.twitch.tv/{streamer_name}'], stdout=fnull, stderr=fnull)
     print(f"downloaded stream from {streamer_name}")
     
+    print(video_path)
     return video_path
 
 
@@ -136,8 +137,10 @@ def view_streamers():
 
 def video_processing_worker():
     while True:
+        print("queu active, waiting for item")
         # Wait for a video to be available in the queue
         video_path = video_queue.get()
+        print("item ready in queue, processing video")
         
         # Process the video
         process_video(video_path, MODEL, output_directory = "/output")
