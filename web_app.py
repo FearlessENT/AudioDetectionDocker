@@ -6,11 +6,39 @@ import subprocess
 import threading
 import queue
 import requests
-from mainnoconversion import process_video  # Import the process_video function
+from mainnoconversion import process_video  
+
+
+
+class VideoProcessingQueue:
+    def __init__(self, model_path, output_directory="/output"):
+        self.tasks = []
+        self.model_path = model_path
+        self.output_directory = output_directory
+        self.worker_thread = threading.Thread(target=self._video_processing_worker, daemon=True)
+        self.worker_thread.start()
+
+    def add_task(self, video_path):
+        self.tasks.append(video_path)
+
+    def _video_processing_worker(self):
+        while True:
+            if self.tasks:
+                video_path = self.tasks.pop(0)
+                print("Processing video:", video_path)
+                process_video(video_path, self.model_path, output_directory=self.output_directory)
+            else:
+                time.sleep(5)  # Sleep for 5 seconds if no tasks are available
+
+
+
+
 
 MODEL = "/model/bdetectionmodel_05_01_23.onnx"
 
-video_queue = queue.Queue()
+video_queue = VideoProcessingQueue(MODEL)
+
+
 
 app = Flask(__name__)
 
@@ -23,6 +51,13 @@ db = SQLAlchemy(app)
 class Streamer(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), unique=True, nullable=False)
+
+
+
+
+
+
+
 
 @app.route('/')
 def index():
@@ -61,11 +96,10 @@ def download_stream(streamer_name):
     video_path = f"/downloads/{streamer_name}_{timestamp}.mp4"
     
     # Use subprocess to run the yt-dlp command and mute its output
-    print(f"downloading stream from {streamer_name}")
+    print(f"download_stream() downloading stream from {streamer_name}")
     with open(os.devnull, 'w') as fnull:
         subprocess.call(['yt-dlp', '-o', video_path, f'https://www.twitch.tv/{streamer_name}'], stdout=fnull, stderr=fnull)
-    print(f"downloaded stream from {streamer_name}")
-    
+    print(f"download_stream() downloaded stream from {streamer_name}")
     print(video_path)
     return video_path
 
@@ -83,7 +117,8 @@ def test_processing():
     video_path = get_most_recent_file("/downloads")
     
     # Add the video to the processing queue
-    video_queue.put(video_path)
+    video_queue.add_task(video_path)
+
     
     return "Started processing the most recent video!", 200
 
@@ -95,12 +130,14 @@ def monitor_and_download(streamer_name):
         if is_streamer_live(streamer_name):
             print(f"{streamer_name} is live! Starting download...")
             video_path = download_stream(streamer_name)
-            print("Download completed!")
+            print(f"Download completed for {streamer_name}")
             
             # Add the downloaded video to the processing queue
-            video_queue.put(video_path)
+            time.sleep(2)
+            video_queue.add_task(video_path)
+            print(f"download from {streamer_name} added to processing queue")
         else:
-            print(f"{streamer_name} is not live. Checking again in {check_interval} seconds...")
+            # print(f"{streamer_name} is not live. Checking again in {check_interval} seconds...")
             time.sleep(check_interval)
 
 
@@ -135,20 +172,6 @@ def view_streamers():
 
 
 
-def video_processing_worker():
-    while True:
-        print("queu active, waiting for item")
-        # Wait for a video to be available in the queue
-        video_path = video_queue.get()
-        print("item ready in queue, processing video")
-        
-        # Process the video
-        process_video(video_path, MODEL, output_directory = "/output")
-        
-        # Mark the task as done
-        video_queue.task_done()
-
-
 
 def start_monitoring_all_streamers():
     with app.app_context():
@@ -158,8 +181,6 @@ def start_monitoring_all_streamers():
 
 
 
-# Start the video processing worker in a separate thread
-threading.Thread(target=video_processing_worker, daemon=True).start()
 
 
 
