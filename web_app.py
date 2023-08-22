@@ -90,6 +90,27 @@ def is_streamer_live(streamer_name):
     return False
 
 
+
+
+import subprocess
+
+def download_stream_with_streamlink(streamer_name, download_directory="/downloads"):
+    timestamp = time.strftime("%Y%m%d%H%M%S")
+    video_path = f"{download_directory}/{streamer_name}_{timestamp}.mp4"
+    
+    print(f"Downloading stream from {streamer_name} using streamlink...")
+    subprocess.call(['streamlink', f'https://www.twitch.tv/{streamer_name}', 'best', '-o', video_path])
+    print(f"Downloaded stream from {streamer_name}")
+    print(video_path)
+    return video_path
+
+
+
+
+
+
+
+
 def download_stream(streamer_name):
     # Use yt-dlp to download the live stream to the /downloads directory in the container
     timestamp = time.strftime("%Y%m%d%H%M%S")
@@ -129,7 +150,15 @@ def monitor_and_download(streamer_name):
     while True:
         if is_streamer_live(streamer_name):
             print(f"{streamer_name} is live! Starting download...")
-            video_path = download_stream(streamer_name)
+            
+            
+            
+            # video_path = download_stream(streamer_name)
+
+            video_path = download_stream_with_streamlink(streamer_name)
+
+
+
             print(f"Download completed for {streamer_name}")
             
             # Add the downloaded video to the processing queue
