@@ -8,4 +8,4 @@ RUN apt-get update && apt-get install -y ffmpeg
 
 COPY . .
 
-CMD ["python", "web_app.py"]
+CMD ["python", "-u", "web_app.py"]
