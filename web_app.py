@@ -25,11 +25,41 @@ class VideoProcessingQueue:
         while True:
             if self.tasks:
                 video_path = self.tasks.pop(0)
-                print("Processing video:", video_path)
-                process_video(video_path, self.model_path, output_directory=self.output_directory)
+
+                print("converting video to better format: ", video_path)
+                new_codec_video = convert_video(video_path)
+                print("Processing video:", new_codec_video)
+                process_video(new_codec_video, self.model_path, output_directory=self.output_directory)
             else:
                 time.sleep(5)  # Sleep for 5 seconds if no tasks are available
 
+
+
+def convert_video(input_file_path):
+    # Get the directory and file name of the input file
+    input_directory, input_file_name = os.path.split(input_file_path)
+    
+    # Generate the output file name by appending a prefix
+    output_file_name = f"libx264_{input_file_name}"
+    
+    # Generate the output file path
+    output_file_path = os.path.join(input_directory, output_file_name)
+    
+    # Define the FFmpeg command as a list of arguments
+    ffmpeg_command = [
+        "ffmpeg",
+        "-i", input_file_path,
+        "-c:v", "libx264",
+        "-profile:v", "baseline",
+        "-level", "3.0",
+        "-c:a", "aac",
+        output_file_path
+    ]
+    
+    # Run the FFmpeg command
+    subprocess.run(ffmpeg_command)
+    
+    return output_file_path
 
 
 
