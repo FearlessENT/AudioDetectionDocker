@@ -40,7 +40,7 @@ def convert_video(input_file_path):
     input_directory, input_file_name = os.path.split(input_file_path)
     
     # Generate the output file name by appending a prefix
-    output_file_name = f"libx264_{input_file_name}"
+    output_file_name = f"libx265_server_{input_file_name}"
     
     # Generate the output file path
     output_file_path = os.path.join(input_directory, output_file_name)
@@ -49,9 +49,11 @@ def convert_video(input_file_path):
     ffmpeg_command = [
         "ffmpeg",
         "-i", input_file_path,
-        "-c:v", "libx264",
-        "-profile:v", "baseline",
-        "-level", "3.0",
+        "-c:v", "libx265",
+        "-preset", "fast",
+        "-crf", "23",
+        "-vf", "scale=-1:720",
+        "-r", "24",
         "-c:a", "aac",
         output_file_path
     ]
