@@ -52,13 +52,12 @@ def convert_video(input_file_path):
         "-c:v", "libx265",
         "-preset", "ultrafast",  # fastest preset
         "-crf", "28",  # higher CRF means faster encoding but lower quality
-        "-vf", "scale=-1:480",  # lower resolution
-        "-r", "20",  # lower frame rate
+        "-vf", "scale=-1:720",  # lower resolution
+        "-r", "24",  # lower frame rate
         "-c:a", "aac",
         "-threads", "4",  # optional: set number of threads
         output_file_path
     ]
-
     
     # Run the FFmpeg command
     subprocess.run(ffmpeg_command)
