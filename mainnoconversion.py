@@ -9,7 +9,8 @@ from downloadvideo import download_video
 
 def run_sound_reader(video_file, model_file):
     # Run sound_reader.py command
-    command = ['python', 'sound_reader.py', '--model', model_file, video_file]
+    audio_file = extract_audio(video_file)
+    command = ['python', 'sound_reader.py', '--model', model_file, audio_file]
     output = subprocess.check_output(command)
     output_lines = output.decode().split('\n')
     timestamps = []
@@ -35,6 +36,13 @@ def compress_videos_in_directory(input_directory, output_directory=None):
                 input_file_path = os.path.join(input_directory, file)
                 print(f"Found video: {input_file_path}")
                 compress_video(input_file_path, output_directory)
+
+def extract_audio(input_file_path):
+    output_file_path = input_file_path.replace('.mp4', '.mp3')
+    command = f'ffmpeg -i "{input_file_path}" -q:a 0 -map a "{output_file_path}"'
+    subprocess.call(command, shell=True)
+    return output_file_path
+
 
 def compress_video(input_file_path, output_directory=None):
     file_name = os.path.basename(input_file_path)

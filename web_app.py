@@ -49,7 +49,8 @@ def convert_video(input_file_path):
     ffmpeg_command = [
         "ffmpeg",
         "-i", input_file_path,
-        "-c:v", "libx265",
+        "-c:v", "libx264",
+        "-b:v", "500k",  # Lower video bitrate
         "-preset", "ultrafast",  # fastest preset
         "-crf", "28",  # higher CRF means faster encoding but lower quality
         "-vf", "scale=-1:720",  # lower resolution
