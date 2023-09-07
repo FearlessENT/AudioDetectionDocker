@@ -26,10 +26,15 @@ class VideoProcessingQueue:
             if self.tasks:
                 video_path = self.tasks.pop(0)
 
+                start_time = time.time()
+
                 print("converting video to better format: ", video_path)
                 new_codec_video = convert_video(video_path)
                 print("Processing video:", new_codec_video)
                 process_video(new_codec_video, self.model_path, output_directory=self.output_directory)
+
+                print(f"total time taken to process {video_path}:   {time.time() - start_time}, or {(time.time() - start_time) / 60} mins ")
+
             else:
                 time.sleep(5)  # Sleep for 5 seconds if no tasks are available
 
@@ -40,7 +45,7 @@ def convert_video(input_file_path):
     input_directory, input_file_name = os.path.split(input_file_path)
     
     # Generate the output file name by appending a prefix
-    output_file_name = f"libx265_server_{input_file_name}"
+    output_file_name = f"libx264_server_{input_file_name}"
     
     # Generate the output file path
     output_file_path = os.path.join(input_directory, output_file_name)
@@ -53,10 +58,10 @@ def convert_video(input_file_path):
         "-b:v", "500k",  # Lower video bitrate
         "-preset", "ultrafast",  # fastest preset
         "-crf", "28",  # higher CRF means faster encoding but lower quality
-        "-vf", "scale=-1:720",  # lower resolution
+        # "-vf", "scale=-1:720",  # lower resolution
         "-r", "24",  # lower frame rate
         "-c:a", "aac",
-        "-threads", "4",  # optional: set number of threads
+     
         output_file_path
     ]
     

@@ -91,6 +91,7 @@ def process_video(video_file, model_file, output_directory=None, buffer_before=2
     elapse_start_time = time.time()
     print(video_file)
     # Extract timestamps from video
+    
     timestamps = extract_timestamps(video_file, model_file)
     sorted_timestamps = sorted(timestamps)
 
