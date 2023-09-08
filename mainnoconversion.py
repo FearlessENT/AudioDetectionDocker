@@ -39,9 +39,10 @@ def compress_videos_in_directory(input_directory, output_directory=None):
 
 def extract_audio(input_file_path):
     output_file_path = input_file_path.replace('.mp4', '.mp3')
-    command = f'ffmpeg -i "{input_file_path}" -q:a 0 -map a "{output_file_path}"'
+    command = f'ffmpeg -i "{input_file_path}" -b:a 70k -map a "{output_file_path}"'
     subprocess.call(command, shell=True)
     return output_file_path
+
 
 
 def compress_video(input_file_path, output_directory=None):
