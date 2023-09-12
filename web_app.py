@@ -61,7 +61,9 @@ class VideoProcessingQueue:
                 # delete the first output
                 os.remove(outputfile1)
 
+
                 # delete the original bad format file
+                os.remove(video_path)
                 
 
 
