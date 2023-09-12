@@ -9,6 +9,9 @@ import requests
 from mainnoconversion import process_video  
 
 
+# if true, remove the originally downloaded stream after converting to new format
+DELETE_ORIGINAL = True
+
 
 class VideoProcessingQueue:
     def __init__(self, model_path, output_directory="/output"):
@@ -28,11 +31,39 @@ class VideoProcessingQueue:
 
                 start_time = time.time()
 
-                print("converting video to better format: ", video_path)
-                new_codec_video = convert_video(video_path)
-                print("Processing video:", new_codec_video)
-                outputfile1 = process_video(new_codec_video, self.model_path, output_directory=self.output_directory, buffer_after=20)
-                outputfile2 = process_video(outputfile1, self.model_path, output_directory= self.output_directory)
+                
+                
+
+
+                # check if its already been converted with the libx flag
+                if "libx" in str(video_path):
+                    print("found lib in file path")
+                    # this converts the file to mp3. you always want to do this on the first one
+                    outputfile1 = process_video(video_path, self.model_path, output_directory=self.output_directory, buffer_after=20, buffer_before = 10)
+
+                else:
+                    print("converting video to better format: ", video_path)
+                    new_codec_video = convert_video(video_path)
+                    outputfile1 = process_video(new_codec_video, self.model_path, output_directory=self.output_directory, buffer_after=20, buffer_before = 10)
+
+
+                print("Processing video:", video_path)
+
+                # if no timestamps
+                if outputfile1 == False:
+                    if DELETE_ORIGINAL == True:
+                        os.remove(video_path)
+                    os.remove(outputfile1)
+                    continue
+                    
+                # audio has already been extracted, therefore no need to convert to mp3 for processing
+                outputfile2 = process_video(outputfile1, self.model_path, output_directory= self.output_directory, convert = False, buffer_before=2, buffer_after=2)
+
+                # delete the first output
+                os.remove(outputfile1)
+
+                # delete the original bad format file
+                
 
 
                 print(f"total time taken to process {video_path}:   {time.time() - start_time}, or {(time.time() - start_time) / 60} mins ")
@@ -57,7 +88,7 @@ def convert_video(input_file_path):
         "ffmpeg",
         "-i", input_file_path,
         "-c:v", "libx264",
-        "-b:v", "500k",  # Lower video bitrate
+        "-b:v", "400k",  # Lower video bitrate
         "-preset", "ultrafast",  # fastest preset
         "-crf", "28",  # higher CRF means faster encoding but lower quality
         # "-vf", "scale=-1:720",  # lower resolution

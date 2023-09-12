@@ -7,10 +7,19 @@ import time
 from trim_video import process_video as trim_video
 from downloadvideo import download_video
 
-def run_sound_reader(video_file, model_file):
+
+def extract_timestamps(video_file, model_file, convert = True):
     # Run sound_reader.py command
-    audio_file = extract_audio(video_file)
-    command = ['python', 'sound_reader.py', '--model', model_file, audio_file]
+    
+    if convert == False:
+        command = ['python', 'sound_reader.py', '--model', model_file, video_file]
+
+    else:
+        audio_file = extract_audio(video_file)
+        command = ['python', 'sound_reader.py', '--model', model_file, audio_file]
+
+
+
     output = subprocess.check_output(command)
     output_lines = output.decode().split('\n')
     timestamps = []
@@ -19,11 +28,10 @@ def run_sound_reader(video_file, model_file):
         match = timestamp_pattern.search(line)
         if match:
             timestamps.append(match.group())
-    return timestamps
 
-def extract_timestamps(video_file, model_file):
-    # Run sound_reader.py command with video file
-    timestamps = run_sound_reader(video_file, model_file)
+    if convert:
+        os.remove(audio_file)
+
     return timestamps
 
 
@@ -36,6 +44,8 @@ def compress_videos_in_directory(input_directory, output_directory=None):
                 input_file_path = os.path.join(input_directory, file)
                 print(f"Found video: {input_file_path}")
                 compress_video(input_file_path, output_directory)
+
+
 
 def extract_audio(input_file_path):
     output_file_path = input_file_path.replace('.mp4', '.mp3')
@@ -87,15 +97,21 @@ def merge_overlapping_segments(segments):
 
 
 
-def process_video(video_file, model_file, output_directory=None, buffer_before=2, buffer_after=2):
+def process_video(video_file, model_file, output_directory=None, buffer_before=2, buffer_after=4, convert = True):
     # Start timing the process
     elapse_start_time = time.time()
     print(video_file)
     # Extract timestamps from video
     
-    timestamps = extract_timestamps(video_file, model_file)
-    sorted_timestamps = sorted(timestamps)
+    # if you dont want to convert, skip the conversion to better effieciency format
+    if convert == False:
+        timestamps = extract_timestamps(video_file, model_file, convert = False)
 
+    # if you do, then leave it blank to auto convert
+    else:
+        timestamps = extract_timestamps(video_file, model_file)
+        
+    sorted_timestamps = sorted(timestamps)
     print("time taken to get timestamps: ", time.time() - elapse_start_time)
 
     # Create list of segments with buffer padding
@@ -119,7 +135,7 @@ def process_video(video_file, model_file, output_directory=None, buffer_before=2
 
     if len(segments) == 0:
         print("No segments detected for video:", video_file)
-        return
+        return False
     
 
     # Merge overlapping segments
