@@ -31,7 +31,9 @@ class VideoProcessingQueue:
                 print("converting video to better format: ", video_path)
                 new_codec_video = convert_video(video_path)
                 print("Processing video:", new_codec_video)
-                process_video(new_codec_video, self.model_path, output_directory=self.output_directory)
+                outputfile1 = process_video(new_codec_video, self.model_path, output_directory=self.output_directory, buffer_after=20)
+                outputfile2 = process_video(outputfile1, self.model_path, output_directory= self.output_directory)
+
 
                 print(f"total time taken to process {video_path}:   {time.time() - start_time}, or {(time.time() - start_time) / 60} mins ")
 

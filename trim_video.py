@@ -75,3 +75,5 @@ def process_video(filename, timestamps, output_directory=None):
         final_clip.write_videofile(output_filename, codec=output_video_codec, audio_codec=output_audio_codec, bitrate=bitrate)
     else:
         final_clip.write_videofile(output_filename, codec=output_video_codec, audio_codec=output_audio_codec)
+
+    return output_filename

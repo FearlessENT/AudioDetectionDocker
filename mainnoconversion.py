@@ -131,12 +131,17 @@ def process_video(video_file, model_file, output_directory=None, buffer_before=2
         print(segment)
 
     # Trim the video
-    trim_video(video_file, segments, output_directory)
+    output_file_path = trim_video(video_file, segments, output_directory)
 
     # Calculate and print the time taken
     elapse_end_time = time.time()
     elapsed_time = elapse_end_time - elapse_start_time
     print(f"Processing time for {video_file}: {elapsed_time} seconds")
+    
+
+    return output_file_path
+
+
 
 
 def increment_timestamp_by_seconds(timestamp, seconds):
