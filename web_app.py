@@ -53,7 +53,6 @@ class VideoProcessingQueue:
                 if outputfile1 == False:
                     if DELETE_ORIGINAL == True:
                         os.remove(video_path)
-                    os.remove(outputfile1)
                     continue
                     
                 # audio has already been extracted, therefore no need to convert to mp3 for processing
