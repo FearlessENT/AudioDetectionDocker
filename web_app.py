@@ -63,7 +63,7 @@ class VideoProcessingQueue:
 
 
                 # delete the original bad format file
-                os.remove(video_path)
+                # os.remove(video_path)
                 
 
 
