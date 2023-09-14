@@ -28,49 +28,43 @@ class VideoProcessingQueue:
         while True:
             if self.tasks:
                 video_path = self.tasks.pop(0)
-
                 start_time = time.time()
 
-                
-                
+                try:
+                    if "libx" in str(video_path):
+                        print("found lib in file path")
+                        outputfile1 = process_video(video_path, self.model_path, output_directory=self.output_directory, buffer_after=20, buffer_before=10)
+                    else:
+                        print("converting video to better format:", video_path)
+                        new_codec_video = convert_video(video_path)
+                        outputfile1 = process_video(new_codec_video, self.model_path, output_directory=self.output_directory, buffer_after=20, buffer_before=10)
 
+                    print("Processing video:", video_path)
 
-                # check if its already been converted with the libx flag
-                if "libx" in str(video_path):
-                    print("found lib in file path")
-                    # this converts the file to mp3. you always want to do this on the first one
-                    outputfile1 = process_video(video_path, self.model_path, output_directory=self.output_directory, buffer_after=20, buffer_before = 10)
+                    if outputfile1 == False:
+                        # Delete the original video only if DELETE_ORIGINAL is True and the video is not needed anymore
+                        if DELETE_ORIGINAL and os.path.exists(video_path):
+                            os.remove(video_path)
+                        continue
 
-                else:
-                    print("converting video to better format: ", video_path)
-                    new_codec_video = convert_video(video_path)
-                    outputfile1 = process_video(new_codec_video, self.model_path, output_directory=self.output_directory, buffer_after=20, buffer_before = 10)
+                    # At this point, outputfile1 has been successfully created and is no longer needed after outputfile2 is created
+                    outputfile2 = process_video(outputfile1, self.model_path, output_directory=self.output_directory, convert=False, buffer_before=2, buffer_after=2)
 
+                    if os.path.exists(outputfile1):
+                        os.remove(outputfile1)
 
-                print("Processing video:", video_path)
-
-                # if no timestamps
-                if outputfile1 == False:
-                    if DELETE_ORIGINAL == True:
+                    # Delete the original video only if DELETE_ORIGINAL is True and the video is not needed anymore
+                    if DELETE_ORIGINAL and os.path.exists(video_path):
                         os.remove(video_path)
-                    continue
-                    
-                # audio has already been extracted, therefore no need to convert to mp3 for processing
-                outputfile2 = process_video(outputfile1, self.model_path, output_directory= self.output_directory, convert = False, buffer_before=2, buffer_after=2)
 
-                # delete the first output
-                # os.remove(outputfile1)
+                except Exception as e:
+                    print(f"An error occurred: {e}")
 
-
-                # delete the original bad format file
-                # os.remove(video_path)
-                
-
-
-                print(f"total time taken to process {video_path}:   {time.time() - start_time}, or {(time.time() - start_time) / 60} mins ")
+                print(f"total time taken to process {video_path}: {time.time() - start_time}, or {(time.time() - start_time) / 60} mins ")
 
             else:
-                time.sleep(5)  # Sleep for 5 seconds if no tasks are available
+                time.sleep(5)
+
 
 
 
