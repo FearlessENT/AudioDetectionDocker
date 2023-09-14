@@ -10,7 +10,7 @@ from mainnoconversion import process_video
 
 
 # if true, remove the originally downloaded stream after converting to new format
-DELETE_ORIGINAL = True
+DELETE_ORIGINAL = False
 
 
 class VideoProcessingQueue:
@@ -59,7 +59,7 @@ class VideoProcessingQueue:
                 outputfile2 = process_video(outputfile1, self.model_path, output_directory= self.output_directory, convert = False, buffer_before=2, buffer_after=2)
 
                 # delete the first output
-                os.remove(outputfile1)
+                # os.remove(outputfile1)
 
 
                 # delete the original bad format file
