@@ -59,6 +59,7 @@ class VideoProcessingQueue:
 
                 except Exception as e:
                     print(f"An error occurred: {e}")
+                    continue
 
                 print(f"total time taken to process {video_path}: {time.time() - start_time}, or {(time.time() - start_time) / 60} mins ")
 
@@ -281,9 +282,67 @@ def start_monitoring_all_streamers():
 
 
 
+
 def create_database():
     with app.app_context():
         db.create_all()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 if __name__ == '__main__':
     create_database()
