@@ -103,7 +103,7 @@ def process_video(video_file, model_file, output_directory=None, buffer_before=2
     print(video_file)
     # Extract timestamps from video
     
-    # if you dont want to convert, skip the conversion to better effieciency format
+    # if you dont want to convert to mp3, skip the conversion to better effieciency format
     if convert == False:
         timestamps = extract_timestamps(video_file, model_file, convert = False)
 

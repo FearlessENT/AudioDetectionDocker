@@ -11,6 +11,7 @@ from mainnoconversion import process_video
 
 # if true, remove the originally downloaded stream after converting to new format
 DELETE_ORIGINAL = False
+DELETE_ALL = False
 
 
 class VideoProcessingQueue:
@@ -31,26 +32,37 @@ class VideoProcessingQueue:
                 start_time = time.time()
 
                 try:
+                    #first round of processing. this extracts the audio
                     if "libx" in str(video_path):
-                        print("found lib in file path")
+                        # this means its already been converted to a proper file 
+                        # convert in the processvideo function means that mp3 audio is extracted if true
+                        print("found lib in file path, does not need converting to fresh video file")
                         outputfile1 = process_video(video_path, self.model_path, output_directory=self.output_directory, buffer_after=20, buffer_before=10)
                     else:
                         print("converting video to better format:", video_path)
+                        #convert the video to not corrupt video stream
                         new_codec_video = convert_video(video_path)
                         outputfile1 = process_video(new_codec_video, self.model_path, output_directory=self.output_directory, buffer_after=20, buffer_before=10)
 
                     print("Processing video:", video_path)
 
+
+                    #second round of processing
+                    #if no timestamps have been detected, then exit.
                     if outputfile1 == False:
+                        print(f"No segments detected for video: {video_path}")
                         # Delete the original video only if DELETE_ORIGINAL is True and the video is not needed anymore
                         if DELETE_ORIGINAL and os.path.exists(video_path):
                             os.remove(video_path)
+                        #continuing to next item in queue
                         continue
 
                     # At this point, outputfile1 has been successfully created and is no longer needed after outputfile2 is created
                     outputfile2 = process_video(outputfile1, self.model_path, output_directory=self.output_directory, convert=False, buffer_before=2, buffer_after=2)
 
-                    if os.path.exists(outputfile1):
+
+                    # delete the output of the first round of processing.
+                    if os.path.exists(outputfile1) and DELETE_ALL:
                         os.remove(outputfile1)
 
                     # Delete the original video only if DELETE_ORIGINAL is True and the video is not needed anymore
@@ -58,7 +70,7 @@ class VideoProcessingQueue:
                         os.remove(video_path)
 
                 except Exception as e:
-                    print(f"An error occurred: {e}")
+                    print(f"somewhere An error occurred: {e}")
                     continue
 
                 print(f"total time taken to process {video_path}: {time.time() - start_time}, or {(time.time() - start_time) / 60} mins ")
