@@ -10,8 +10,8 @@ from mainnoconversion import process_video
 
 
 # if true, remove the originally downloaded stream after converting to new format
-DELETE_ORIGINAL = False
-DELETE_ALL = False
+DELETE_ORIGINAL = True
+DELETE_ALL = True
 
 
 class VideoProcessingQueue:
@@ -30,6 +30,7 @@ class VideoProcessingQueue:
             if self.tasks:
                 video_path = self.tasks.pop(0)
                 start_time = time.time()
+                new_codec_video = False
 
                 try:
                     #first round of processing. this extracts the audio
@@ -61,13 +62,21 @@ class VideoProcessingQueue:
                     outputfile2 = process_video(outputfile1, self.model_path, output_directory=self.output_directory, convert=False, buffer_before=2, buffer_after=2)
 
 
-                    # delete the output of the first round of processing.
-                    if os.path.exists(outputfile1) and DELETE_ALL:
-                        os.remove(outputfile1)
+                    # delete all other videos except the output. this is only reached if segments detected
+                    if DELETE_ALL:
+                        # delete first output file
+                        if os.path.exists(outputfile1):
+                            os.remove(outputfile1)
 
-                    # Delete the original video only if DELETE_ORIGINAL is True and the video is not needed anymore
-                    if DELETE_ORIGINAL and os.path.exists(video_path):
-                        os.remove(video_path)
+                        # delete the libx codec video
+                        if new_codec_video != False and os.path.exists(new_codec_video):
+                            os.remove(new_codec_video)
+                        
+                        # delete the original video
+                        if os.path.exists(video_path) and DELETE_ORIGINAL:
+                            os.remove(video_path)
+
+
 
                 except Exception as e:
                     print(f"somewhere An error occurred: {e}")
