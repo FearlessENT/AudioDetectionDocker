@@ -135,6 +135,24 @@ class Streamer(db.Model):
 
 
 
+@app.route('/add_downloads_to_queue', methods=['GET', 'POST'])
+def add_downloads_to_queue():
+    if request.method == 'POST':
+        # Assuming the downloads folder is in a standard location
+        downloads_folder = '/downloads'
+
+        
+        # List all items in the downloads folder
+        items = os.listdir(downloads_folder)
+        
+        # Add each item to the queue
+        for item in items:
+            video_queue.add_task(os.path.join(downloads_folder, item))
+        
+        return redirect(url_for('add_downloads_to_queue'))
+
+    return render_template('add_downloads_to_queue.html', video_queue=video_queue)
+
 
 
 

@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Downloads to Queue</title>
+</head>
+<body>
+    <h1>Add Downloads to Queue</h1>
+    <form method="post">
+        <input type="submit" value="Add Downloads to Queue">
+    </form>
+    <h2>Current Queue</h2>
+    <ul>
+        {% for item in video_queue.tasks %}
+            <li>{{ item }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
