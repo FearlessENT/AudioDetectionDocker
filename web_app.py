@@ -255,25 +255,22 @@ def test_processing():
 def monitor_and_download(streamer_name):
     check_interval = 300  # Check every 60 seconds
     while True:
-        if is_streamer_live(streamer_name):
-            print(f"{streamer_name} is live! Starting download...")
-            
-            
-            
-            # video_path = download_stream(streamer_name)
+        try:
+            if is_streamer_live(streamer_name):
+                print(f"{streamer_name} is live! Starting download...")
+                
+                video_path = download_stream_with_streamlink(streamer_name)
 
-            video_path = download_stream_with_streamlink(streamer_name)
-
-
-
-            print(f"Download completed for {streamer_name}")
-            
-            # Add the downloaded video to the processing queue
-            time.sleep(2)
-            video_queue.add_task(video_path)
-            print(f"download from {streamer_name} added to processing queue")
-        else:
-            # print(f"{streamer_name} is not live. Checking again in {check_interval} seconds...")
+                print(f"Download completed for s{streamer_name}")
+                
+                # Add the downloaded video to the processing queue
+                time.sleep(2)
+                video_queue.add_task(video_path)
+                print(f"download from {streamer_name} added to processing queue")
+            else:
+                time.sleep(check_interval)
+        except Exception as e:
+            print(f"An error occurred while monitoring {streamer_name}: {e}")
             time.sleep(check_interval)
 
 
