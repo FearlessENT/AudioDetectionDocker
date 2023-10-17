@@ -186,7 +186,7 @@ def is_streamer_live(streamer_name):
     # Use the Twitch API to check if the streamer is live
     headers = {
         'Client-ID': 'bhi8sez9xw58zn0yqnjiji6uzlewhd',
-        'Authorization': 'Bearer svpsvp9a4beqdgycuzhipafpsosatv'
+        'Authorization': 'Bearer 7kzzluhyoc7zgujqfnfzq3q7q1xf8l'
     }
     response = requests.get(f'https://api.twitch.tv/helix/streams?user_login={streamer_name}', headers=headers)
     data = response.json()
