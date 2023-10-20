@@ -11,7 +11,10 @@ from mainnoconversion import process_video
 
 # if true, remove the originally downloaded stream after converting to new format
 DELETE_ORIGINAL = True
-DELETE_ALL = True
+# DELETE_ALL = True
+DELETE_LIB = False
+DELETE_FIRST_PASS = True
+
 
 
 class VideoProcessingQueue:
@@ -63,18 +66,39 @@ class VideoProcessingQueue:
 
 
                     # delete all other videos except the output. this is only reached if segments detected
-                    if DELETE_ALL:
-                        # delete first output file
+                    # if DELETE_ALL:
+                    #     # delete first output file
+                    #     if os.path.exists(outputfile1):
+                    #         os.remove(outputfile1)
+
+                    #     # delete the libx codec video
+                    #     if new_codec_video != False and os.path.exists(new_codec_video):
+                    #         os.remove(new_codec_video)
+                        
+                    #     # delete the original video
+                    #     if os.path.exists(video_path) and DELETE_ORIGINAL:
+                    #         os.remove(video_path)
+
+                    # delete the output lib file
+                    if DELETE_LIB:
+                        if new_codec_video != False and os.path.exists(new_codec_video):
+                            os.remove(new_codec_video)
+                    
+                    # delete the original downloaded stream
+                    if DELETE_ORIGINAL:
+                        if os.path.exists(video_path) and DELETE_ORIGINAL:
+                            os.remove(video_path)
+                
+                    # delete the first pass output, the longer video
+                    if DELETE_FIRST_PASS:
                         if os.path.exists(outputfile1):
                             os.remove(outputfile1)
 
-                        # delete the libx codec video
-                        if new_codec_video != False and os.path.exists(new_codec_video):
-                            os.remove(new_codec_video)
-                        
-                        # delete the original video
-                        if os.path.exists(video_path) and DELETE_ORIGINAL:
-                            os.remove(video_path)
+
+
+
+
+
 
 
 

@@ -29,8 +29,8 @@ def extract_timestamps(video_file, model_file, convert = True):
         if match:
             timestamps.append(match.group())
 
-    # if convert:
-    #     os.remove(audio_file)
+    if convert:
+        os.remove(audio_file)
 
     return timestamps
 
