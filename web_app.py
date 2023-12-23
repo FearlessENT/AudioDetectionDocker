@@ -13,7 +13,7 @@ from mainnoconversion import process_video
 DELETE_ORIGINAL = True
 # DELETE_ALL = True
 DELETE_LIB = False
-DELETE_FIRST_PASS = True
+DELETE_FIRST_PASS = False
 
 
 
@@ -210,7 +210,7 @@ def is_streamer_live(streamer_name):
     # Use the Twitch API to check if the streamer is live
     headers = {
         'Client-ID': 'bhi8sez9xw58zn0yqnjiji6uzlewhd',
-        'Authorization': 'Bearer 7kzzluhyoc7zgujqfnfzq3q7q1xf8l'
+        'Authorization': 'Bearer t27mohzcuxsp9cbc9kjg6aihnih6hn'
     }
     response = requests.get(f'https://api.twitch.tv/helix/streams?user_login={streamer_name}', headers=headers)
     data = response.json()
