@@ -230,7 +230,7 @@ def download_stream_with_streamlink(streamer_name, download_directory="/download
     video_path = f"{download_directory}/{streamer_name}_{timestamp}.mp4"
     
     print(f"Downloading stream from {streamer_name} using streamlink...")
-    subprocess.call(['streamlink', f'https://www.twitch.tv/{streamer_name}', 'best', '-o', video_path])
+    subprocess.call(['streamlink', f'https://www.twitch.tv/{streamer_name}', '720p,720p60,best', '-o', video_path])
     print(f"Downloaded stream from {streamer_name}")
     print(video_path)
     return video_path

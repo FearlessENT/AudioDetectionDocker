@@ -9,7 +9,7 @@ def download_video(url, temp_folder):
 
     timestamp = time.strftime("%Y%m%d-%H%M%S")
     ydl_opts = {
-        'format': 'best',
+        'format': 'best[height<=720]',
         'nocheckcertificate': True,
         'outtmpl': f'{output_folder}/%(title)s-{timestamp}.%(ext)s',  # added timestamp suffix
         'cookies': 'cookies.txt',
