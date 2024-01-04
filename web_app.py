@@ -62,7 +62,7 @@ class VideoProcessingQueue:
                         continue
 
                     # At this point, outputfile1 has been successfully created and is no longer needed after outputfile2 is created
-                    outputfile2 = process_video(outputfile1, self.model_path, output_directory=self.output_directory, convert=False, buffer_before=2, buffer_after=2)
+                    outputfile2 = process_video(outputfile1, self.model_path, output_directory=self.output_directory, convert=False, buffer_before=2, buffer_after=2, pass_number = 2)
 
 
                     # delete all other videos except the output. this is only reached if segments detected

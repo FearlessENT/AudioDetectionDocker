@@ -36,18 +36,68 @@ def remux_video(filename):
 
 
 
-def process_video(filename, timestamps, output_directory=None):
+def is_within_duration(start_seconds, end_seconds, duration):
+    # Check if both start and end times are within the video duration
+    return start_seconds <= duration and end_seconds <= duration
+
+
+
+
+def process_video(filename, timestamps, output_directory=None, pass_number = 1):
     # filename = remux_video(filename)
-    clips = []
+
+
+    base_filename, _ = os.path.splitext(os.path.basename(filename))
+    video_specific_folder = os.path.join(output_directory, base_filename) if output_directory else base_filename
+
+
     video_clip = VideoFileClip(filename)
+    video_duration = video_clip.duration
+
+    if pass_number == 2:  # Check if it's the second pass
+        if not os.path.exists(video_specific_folder):
+            os.makedirs(video_specific_folder)  # Create the directory if it does not exist
+
+        clip_counter = 1
+
+        for start, end in timestamps:
+
+            # Convert timestamps to seconds
+            start_seconds = convert_timestamp_to_seconds(start)
+            end_seconds = convert_timestamp_to_seconds(end)
+
+            if is_within_duration(start_seconds, end_seconds, video_duration):
+
+
+                
+                clip = video_clip.subclip(start_seconds, end_seconds)
+                # Determine output filename for individual clip
+                base_filename, _ = os.path.splitext(os.path.basename(filename))
+                individual_clip_output_filename = f"{video_specific_folder}/{base_filename}_clip_{clip_counter}.mp4"
+
+                # Write the individual clip to file
+                clip.write_videofile(individual_clip_output_filename, codec="libx264", audio_codec="aac")
+
+                clip_counter += 1
+
+
+
+    clips = []
+    
+
+    
 
     for start, end in timestamps:
         # Convert timestamps to seconds
         start_seconds = convert_timestamp_to_seconds(start)
         end_seconds = convert_timestamp_to_seconds(end)
 
-        # Create subclip and add to clips list
-        clips.append(video_clip.subclip(start_seconds, end_seconds))
+        if is_within_duration(start_seconds, end_seconds, video_duration):
+
+            # Create subclip and add to clips list
+            clips.append(video_clip.subclip(start_seconds, end_seconds))
+        
+        
 
     # Concatenate and save clips
     final_clip = concatenate_videoclips(clips, method="compose")
