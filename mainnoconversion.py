@@ -65,7 +65,7 @@ def compress_video(input_file_path, output_directory=None):
     else:
         output_file_path = os.path.join(os.path.dirname(input_file_path), output_file_name)
 
-    command = f'ffmpeg -i "{input_file_path}" -c:v libx265 -crf 28 -preset medium -c:a aac -b:a 128k "{output_file_path}"'
+    command = f'ffmpeg -i "{input_file_path}" -c:v libx265 -crf 28 -threads 16 -preset medium -c:a aac -b:a 128k "{output_file_path}"'
     subprocess.call(command, shell=True)
     print(f"Compressed video saved as: {output_file_path}")
 

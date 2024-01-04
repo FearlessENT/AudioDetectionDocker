@@ -133,6 +133,7 @@ def convert_video(input_file_path):
         "-preset", "ultrafast",  # fastest preset
         "-crf", "28",  # higher CRF means faster encoding but lower quality
         # "-vf", "scale=-1:720",  # lower resolution
+        '-threads', '16',  
         "-r", "24",  # lower frame rate
         "-c:a", "aac",
      
