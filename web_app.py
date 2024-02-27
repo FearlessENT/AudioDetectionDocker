@@ -201,7 +201,7 @@ def index():
 
 
 
-# curl -X POST 'https://id.twitch.tv/oauth2/token?client_id=bhi8sez9xw58zn0yqnjiji6uzlewhd&client_secret=t27mohzcuxsp9cbc9kjg6aihnih6hn&grant_type=client_credentials'
+# curl -X POST 'https://id.twitch.tv/oauth2/token?client_id=bhi8sez9xw58zn0yqnjiji6uzlewhd&client_secret=0lp3jj7lhakgf9awp46we178d05e29&grant_type=client_credentials'
 
 
 
@@ -211,7 +211,7 @@ def is_streamer_live(streamer_name):
     # Use the Twitch API to check if the streamer is live
     headers = {
         'Client-ID': 'bhi8sez9xw58zn0yqnjiji6uzlewhd',
-        'Authorization': 'Bearer qg81pkeq7tlffmkpwogvgf3v4xghy6'
+        'Authorization': 'Bearer vno8x5v5bezripscilah76pmymnc0z'
     }
     response = requests.get(f'https://api.twitch.tv/helix/streams?user_login={streamer_name}', headers=headers)
     data = response.json()
